@@ -83,7 +83,6 @@ class AI:
         
             workingSet = []
             checkSet = set(workingSet)
-            index = 0
             Result = self.dfs(self.Board, workingSet, checkSet, index)
             if (len(Result) == 2):
                 foundSet = True
