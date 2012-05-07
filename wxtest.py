@@ -13,7 +13,7 @@ GET_BOARD = 4
 
 
 class AI:
-    """docstring for AI"""
+    """Class that keeps track of game settings and has methods for solving SET"""
     def __init__(self, _boardsize=12, _setsize=3, _props=4):
         self.Deck = []
         self.Board = []
@@ -25,7 +25,7 @@ class AI:
         
 
     def LoadFile(self, filePath):
-        """docstring for LoadFile"""
+        """Loads a file into Deck, then pops off boardsize cards into Board"""
         fLoad = open(filePath, 'r')
         
         for line in fLoad:
@@ -39,7 +39,7 @@ class AI:
 
 
     def check(self, CardList, Board):
-        """docstring for check"""
+        """Algorithm for checking whether a set is valid. Can be made more efficient (currently in O(pnlogn), should be O(pn) where p = props and n = setsize"""
         if len(CardList) != self.setsize:
             return False
         for i in range(self.props):
@@ -51,7 +51,7 @@ class AI:
         return True
      
     def dfs(self, Board, workingSet, checkSet, index):
-        """docstring for dfs"""
+        """Recursive call for finding sets."""
         
         if not(index in checkSet):
             workingSet.append(index)
@@ -77,28 +77,25 @@ class AI:
 
      
     def Find(self):
-        """docstring for Find"""
-        foundSet = False
+        """Driver function for dfs"""
         for index in range(self.boardsize):
         
             workingSet = []
             checkSet = set(workingSet)
             Result = self.dfs(self.Board, workingSet, checkSet, index)
             if (len(Result) == 2):
-                foundSet = True
                 return Result 
             else:
                 workingSet[:] = []
 
 
-        if not(foundSet):
-            return False,
+        return False,
          
         
         
 
 class SetDemo(wx.Frame):
-    """docstring for """
+    """Class that handles all graphical interactions"""
     def __init__(self, arg):
         super(SetDemo, self).__init__(arg)
         self.arg = arg
@@ -116,7 +113,7 @@ class SetDemo(wx.Frame):
         self.InitUI()
     
     def InitUI(self):
-        """docstring for InitUI"""
+        """Initializes the UI"""
 
         ID_DEPTH = wx.NewId()
         
@@ -147,11 +144,11 @@ class SetDemo(wx.Frame):
         self.Show(True)
 
     def OnQuit(self, e):
-        """docstring for OnQuit"""
+        """Event that handles closing the application"""
         self.Close()
         self.Destroy()
     def OnLoad(self, e):
-        """docstring for OnLoad"""
+        """Event that handles loading the deck file through a dialog"""
         filePath = ""
         dialog = wx.FileDialog(self, message="Choose a deck", defaultDir = os.getcwd(), style = wx.OPEN)
         if dialog.ShowModal() == wx.ID_OK:
@@ -172,7 +169,7 @@ class SetDemo(wx.Frame):
 
 
     def OnFind(self, e):
-        """docstring for OnFind"""
+        """Event that calls the AI.Find() method, then updates the Layout to show the solution"""
         SET = self.Solver.Find()
         if len(SET) == 2:
             
@@ -199,12 +196,12 @@ class SetDemo(wx.Frame):
         pass
         
     def OnGet(self, e):
-        """docstring for OnGet"""        
+        """Event that calls UpdateBoard()"""        
         self.UpdateBoard()
         pass          
     
     def UpdateBoard(self):
-        """docstring for UpdateBoard"""
+        """Updates the AI's internal representation of the Board, then calls Represent, also handles case where deck is emptied"""
         cards = set(self.FoundResult)
         
         if len(self.Solver.Deck) < self.Solver.setsize:
@@ -226,19 +223,10 @@ class SetDemo(wx.Frame):
             
 
         for i in range(self.Solver.setsize):
-            
-
             card = self.Solver.Deck.pop()  
             self.Solver.Board[self.FoundResult[i]] = card
 
                 
-        """ 
-        for item in range(len(self.tiles.GetChildren())):
-            Item = self.tiles.GetItem(item)
-            if not(Item.IsShown()):
-                (self.tiles.GetItem(item)).Show(True)
-        """
-        
         self.tiles.Clear(True)
         self.tiles.Layout()
 
@@ -262,7 +250,7 @@ class SetDemo(wx.Frame):
 
         return BMP
     def Represent(self, Board):
-        """docstring for Represent"""
+        """Updates GUI to represent AI's internal Board representation"""
         for i in range(len(Board)):
             cardBMP = self.GetImage(Board[i])
             card = wx.StaticBitmap(self.MainPanel, wx.ID_ANY, cardBMP)
