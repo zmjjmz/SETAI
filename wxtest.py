@@ -37,19 +37,29 @@ class AI:
         for i in range(self.boardsize):
             self.Board.append(self.Deck.pop())
 
- 
-    def dfs(Board, workingSet, checkSet, index):
+
+    def check(self, CardList, Board):
+        """docstring for check"""
+        if len(CardList) != self.setsize:
+            return False
+        for i in range(self.props):
+            proplist = []
+            for j in range(self.setsize):
+                proplist.append(Board[CardList[j]][i])
+            if not((len(set(proplist)) == 1) or (len(set(proplist)) == self.setsize)):
+                return False
+        return True
+     
+    def dfs(self, Board, workingSet, checkSet, index):
         """docstring for dfs"""
         
         if not(index in checkSet):
             workingSet.append(index)
             checkSet.add(index)
         if len(workingSet) < self.setsize:
-            print "Adding another card to the set"
-            print workingSet
             for i in range(self.boardsize):
                 if not(i in checkSet):
-                    Result = dfs(Board, workingSet, checkSet, i)
+                    Result = self.dfs(Board, workingSet, checkSet, i)
                     if Result[0]:
                         return True, Result[1]
                     else:
@@ -59,22 +69,25 @@ class AI:
             return False,
                        
 
-        if check(workingSet, Board): 
+        if self.check(workingSet, Board): 
             return (True, workingSet)
+        else:
+            return False,
+        
+
      
     def Find(self):
         """docstring for Find"""
-
+        foundSet = False
         for index in range(self.boardsize):
         
             workingSet = []
             checkSet = set(workingSet)
             index = 0
-            Result = dfs(Board, workingSet, checkSet, index)
+            Result = self.dfs(self.Board, workingSet, checkSet, index)
             if (len(Result) == 2):
                 foundSet = True
-                print_set(Result[1])
-                break
+                return Result 
             else:
                 workingSet[:] = []
 
@@ -90,12 +103,14 @@ class SetDemo(wx.Frame):
     def __init__(self, arg):
         super(SetDemo, self).__init__(arg)
         self.arg = arg
+        self.FoundResult = []
         self.Solver = AI()
-        self.tiles = wx.GridSizer(self.Solver.setsize,self.Solver.props)
+        self.tiles = wx.GridSizer(self.Solver.setsize,self.Solver.props,2,2)
         self.MainPanel = wx.Panel(self, style=wx.SUNKEN_BORDER)
 
         self.tiles.SetContainingWindow(self.MainPanel)
         self.MainPanel.SetSizer(self.tiles)
+
 
 
 
@@ -159,16 +174,85 @@ class SetDemo(wx.Frame):
 
     def OnFind(self, e):
         """docstring for OnFind"""
-        SET = Solver.Find()
-        if len(SET) = 0:
-            # Whatever Dialog says No Solution
-        else:
-            # Dialog that has the three cards
-        pass
-    def OnGet(self, e):
-        """docstring for OnGet"""
-        pass          
+        SET = self.Solver.Find()
+        if len(SET) == 2:
+            
+            cards = set(SET[1])
+            print cards
+            
+            for item in range(self.Solver.boardsize):
+                if not(item in cards):
+                    Item = self.tiles.GetItem(item)
+                    if Item.IsShown():
+                        Item.Show(False)
 
+            self.tiles.Layout()
+
+            wx.MessageBox('Press when done viewing solution','', wx.OK)
+            
+            self.FoundResult = SET[1]
+            self.UpdateBoard()
+
+        else:
+            wx.MessageBox('No Solution', 'Result', wx.OK)
+            for i in range(self.Solver.setsize):
+                self.FoundResult.append(random.randint(0,self.Solver.boardsize - 1))
+            print self.FoundResult
+            self.UpdateBoard()
+        pass
+        
+    def OnGet(self, e):
+        """docstring for OnGet"""        
+        self.UpdateBoard()
+        pass          
+    
+    def UpdateBoard(self):
+        """docstring for UpdateBoard"""
+        cards = set(self.FoundResult)
+        
+        if len(self.Solver.Deck) < self.Solver.setsize:
+            choices = ['Yes','Quit']
+            contDlg = wx.SingleChoiceDialog(self, "Deck is out of cards. Load new deck?", "Continue", choices, wx.YES_NO)
+            contDlg.ShowModal()
+            selection = contDlg.GetSelection()
+            if selection == 0:
+               wx.MessageBox("Select new deck from Load File", "Do this", wx.OK) 
+               self.Solver.Board = []
+               self.Solver.Deck = []
+               self.FoundResult = []
+               self.tiles.Clear(True)
+               pass
+                
+            else:
+                self.Destroy()
+
+            
+
+        for i in range(self.Solver.setsize):
+            
+
+            card = self.Solver.Deck.pop()  
+            self.Solver.Board[self.FoundResult[i]] = card
+
+        print self.Solver.Board
+                
+        """ 
+        for item in range(len(self.tiles.GetChildren())):
+            Item = self.tiles.GetItem(item)
+            if not(Item.IsShown()):
+                (self.tiles.GetItem(item)).Show(True)
+        """
+        
+        self.tiles.Clear(True)
+        self.tiles.Layout()
+
+        self.Represent(self.Solver.Board)
+
+        self.FoundResult = []
+
+
+        pass
+    
     def GetImage(self, Card):
         """Returns a BitMap object that matches the card"""
        

@@ -4,8 +4,8 @@
 These properties correspond to the actual SET game
     Properties:
     1 - shape:
-        1 squiggle
-        2 oval
+        1 oval
+        2 squiggle
         3 diamond
     2 - color:
         1 red
@@ -24,6 +24,7 @@ These properties correspond to the actual SET game
 import sys
 import random
 import math
+import pygame
 
 sys.setrecursionlimit(10000)
 
@@ -99,7 +100,7 @@ def dfs(Board, workingSet, checkSet, index):
         
 def print_set(FinalSet):
     """docstring for printSet"""
-    for i in FinalSet:
+    for i in range(SET_SIZE):
         for j in range(CARD_PROPS):
             sys.stdout.write(Board[FinalSet[i]][j])
             sys.stdout.write(" ")
