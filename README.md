@@ -1,4 +1,4 @@
 SETAI
 =====
 
-Simple python/pygame program that solves SET-style games of varying sizes
+Simple wxPython program that solves SET-style games of varying sizes
