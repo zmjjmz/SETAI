@@ -178,7 +178,6 @@ class SetDemo(wx.Frame):
         if len(SET) == 2:
             
             cards = set(SET[1])
-            print cards
             
             for item in range(self.Solver.boardsize):
                 if not(item in cards):
@@ -197,7 +196,6 @@ class SetDemo(wx.Frame):
             wx.MessageBox('No Solution', 'Result', wx.OK)
             for i in range(self.Solver.setsize):
                 self.FoundResult.append(random.randint(0,self.Solver.boardsize - 1))
-            print self.FoundResult
             self.UpdateBoard()
         pass
         
@@ -234,7 +232,6 @@ class SetDemo(wx.Frame):
             card = self.Solver.Deck.pop()  
             self.Solver.Board[self.FoundResult[i]] = card
 
-        print self.Solver.Board
                 
         """ 
         for item in range(len(self.tiles.GetChildren())):
