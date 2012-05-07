@@ -16,4 +16,6 @@ To Run:
     three cards from the board and continue.
   - Once the end of the deck is reached, the program will prompt to either quit or load a new file.
     
+Notes:
+  - Images shamelessly stolen from https://github.com/dbravender/websocket_set/tree/master/static/cards
   
